@@ -1,0 +1,23 @@
+{% load static %}
+
+<div class="col-md-6 col-12 col-sm-12 col-lg-4">
+    <figure class="card animate__animated animate__zoomIn">
+        <img nopin="nopin" oncontextmenu="return false;" class="img-fluid" style="max-height:13rem; min-height: 3rem;" src="https://www.roadaffair.com/wp-content/uploads/2021/03/mortlock-wing-library-south-australia-adelaide-shutterstock_1462390214.jpg">
+        <div class="card-header h4 text-center" style="font-family: chilanka;">
+            {{post.title|truncatechars:60}}
+        </div>
+        <div class="card-body border-bottom pb-2">
+            <div class="pb-0">
+                <p class="text-muted small">
+                    posted on 21<sup>st</sup> Oct, 2023
+                </p>
+            </div>
+            <p class="h5 text-muted pt-0" style="font-family: chilanka;">
+                Libraries, Libraries, Oh Libraries, so much knowledge in them guess why?
+                You could be right, because of too many books. Funny truth right? This library is one of the best
+                libraries in Lusaka city.
+            </p>
+        </div>
+        <button onclick="makePayment()" type="button" id="{{post.pk}}" class="btn btn-primary text-white ">Buy Membership</button>
+    </figure>
+</div>
