@@ -56,11 +56,12 @@ def process_payment(name,email,amount,phone):
 
 @require_http_methods(['GET', 'POST'])
 def index(request):
-    name=  'Patrick Patrick'
-    email = 'patrick@gmail.com'
-    amount = 150
-    phone = '260762412680'
     if request.method=='POST':
+        name=  'Siame Chriford'
+        email = 'siamechrif@gmail.com'
+        amount = request.POST.get('amount')
+        float(amount)
+        phone = '260762412680'
         return redirect(
             str(
                 process_payment(
@@ -74,12 +75,6 @@ def index(request):
     libraries = [0,2,2]
     return render(request, 'index.html', {
         'libraries': libraries,
-        'customer': dict(
-            name = name,
-            email = email,
-            amount = amount,
-            phone = phone,    
-        ),
         'public_key': 'FLWPUBK_TEST-d1765bbd42307aad3ccb6fa9d59e21d9-X',
     })
 
