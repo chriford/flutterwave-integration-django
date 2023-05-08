@@ -1,5 +1,5 @@
 
 # Flutterwave integration - python django
-![..](static/flutterwave-payment-workflow1.gif)
+![overview](./static/flutterwave-payment-workflow1.gif)
 
 ## happy coding !
