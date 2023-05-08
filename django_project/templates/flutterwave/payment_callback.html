@@ -1,0 +1,6 @@
+{% if payment_status == 'successful' %}
+{% include 'flutterwave/payment_success.html' %}
+{% elif payment_status == 'cancelled' %}
+{% include 'flutterwave/payment_fail.html' %}
+{% else %}
+{% endif %}
