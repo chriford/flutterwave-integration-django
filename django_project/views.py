@@ -26,7 +26,7 @@ def process_payment(name,email,amount,phone):
         "tx_ref":'' + str(math.floor(1000000 + random.random()*9000000)),
         "amount":amount,
         "currency":"ZMW",
-        "redirect_url": "http://localhost:8000/callback",
+        "redirect_url": "http://localhost:8003/callback",
         "payment_options":"card, mobilemoneyghana, barter",
         "meta":{
             "consumer_id":23,
@@ -52,7 +52,6 @@ def process_payment(name,email,amount,phone):
     response=response.json()
     link=response['data']['link']
     return link
-    
 
 @require_http_methods(['GET', 'POST'])
 def index(request):
