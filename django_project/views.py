@@ -23,7 +23,7 @@ def process_payment(name,email,amount,phone):
     auth_token= 'FLWSECK_TEST-a987ec54fe7b47dfa301709a3a4096d5-X'
     hed = {'Authorization': 'Bearer ' + auth_token}
     data = {
-        "tx_ref":''+str(math.floor(1000000 + random.random()*9000000)),
+        "tx_ref":'' + str(math.floor(1000000 + random.random()*9000000)),
         "amount":amount,
         "currency":"ZMW",
         "redirect_url": "http://localhost:8000/callback",
@@ -40,7 +40,7 @@ def process_payment(name,email,amount,phone):
         "customizations":{
             "title": "Membership Payment",
             "description": "chase your dreams with the right tool -> Books",
-            "logo":"https://img.freepik.com/free-vector/gradient-library-logo-template_23-2149330624.jpg"
+            "logo":"https://photo.designxel.com/static/vector/2015/3/14/facegfx-vector-creative-book-combinatorial-library-logo-vector.jpg"
         }
     }
     url = ' https://api.flutterwave.com/v3/payments'
