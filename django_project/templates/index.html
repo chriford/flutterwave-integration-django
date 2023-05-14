@@ -13,8 +13,105 @@ Shop
     <p class="text-muted h4">implemented by chriford</p>
 </marquee>
 <div class="container">
-    <div class="row">
-        {% include 'include/card.html' %}
+    <input type="text" placeholder="search a hotel" name="hotel" id="hotel-search-bar" class="form-control mb-2">
+    <div class="row" id="organizer-cards">
+        {% for library in libraries %}
+            {% include 'include/card.html' %}
+        {% endfor %}
     </div>
 </div>
+<script>
+    const organizerSearchBar = document.getElementById('hotel-search-bar');
+    const organizerCardContainer = document.getElementById('organizer-cards');
+    let organizerSearchResults;
+    organizerSearchResults = [];
+    function organizerSearchURL(query){
+        console.log(JSON.stringify(organizerSearchResults));
+        console.log(query)
+        const url = `http://127.0.0.1:8000/hotel/query/${query}/search/`
+        return url
+    }
+    async function organizerDataScrapper(url){
+        const uncleanedData = await fetch(url);
+        const cleanedData = await uncleanedData.json();
+        organizerSearchResults = await cleanedData.payload;
+        return cleanedData;
+    }
+    function organizerCardDisplayer(
+        name,
+        description,
+        date_created,
+        organizer_index
+    ) {
+        organizerCardContainer.innerHTML += `
+        <form method="post" class="col-md-6 col-12 col-sm-12 col-lg-4">
+            {% csrf_token %}
+            <input type="hidden" name="amount" value="350">
+            <figure class="card animate__animated animate__zoomIn">
+                <img nopin="nopin" oncontextmenu="return false;" class="img-fluid" style="max-height:13rem; min-height: 3rem;" src="https://www.roadaffair.com/wp-content/uploads/2021/03/mortlock-wing-library-south-australia-adelaide-shutterstock_1462390214.jpg">
+                <div class="card-header h4 text-center" style="font-family: chilanka;">
+                    ${name}
+                </div>
+                <div class="card-body border-bottom pb-2">
+                    <div class="pb-0">
+                        <p class="text-muted small">
+                            posted on ${date_created}
+                        </p>
+                    </div>
+                    <p class="h5 text-muted pt-0" style="font-family: chilanka;">
+                        ${description}
+                    </p>
+                </div>
+                <button type="submit" id="${organizer_index}" class="btn btn-primary text-white ">Buy Membership</button>
+            </figure>
+        </form>
+        `
+    }
+    organizerSearchBar.addEventListener('keypress', (event) => {
+        try {
+            setTimeout(() => {
+                organizerDataScrapper(
+                    organizerSearchURL(
+                        organizerSearchBar.value,
+                    )
+                )
+            }, 300)
+        } catch (error) {
+            organizerSearchResults = []
+            console.log(error)
+        }
+        organizerCardContainer.innerHTML = '';
+        for (let index = 0; index < organizerSearchResults.length; index++) {
+            organizerCardDisplayer(
+                name=organizerSearchResults[index].name,
+                description=organizerSearchResults[index].description,
+                date_created=organizerSearchResults[index].created_at.date,
+                organizer_index=organizerSearchResults[index].pk,
+            )        
+        }
+    })
+    organizerSearchBar.addEventListener('keydown', (event) => {
+        try {
+            setTimeout(() => {
+                organizerDataScrapper(
+                    organizerSearchURL(
+                        organizerSearchBar.value,
+                    )
+                )
+            }, 300)
+        } catch (error) {
+            organizerSearchResults = []
+            console.log(error)
+        }
+        organizerCardContainer.innerHTML = '';
+        for (let index = 0; index < organizerSearchResults.length; index++) {
+            organizerCardDisplayer(
+                name=organizerSearchResults[index].name,
+                description=organizerSearchResults[index].description,
+                date_created=organizerSearchResults[index].created_at.date,
+                organizer_index=organizerSearchResults[index].pk,
+            )        
+        }
+    })
+</script>
 {% endblock %}
