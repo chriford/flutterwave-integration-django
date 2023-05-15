@@ -4,7 +4,7 @@
 {% endblock %}
 
 {% block title %}
-Shop
+    Library
 {% endblock %}
 
 {% block body %}
@@ -21,21 +21,37 @@ Shop
     </div>
 </div>
 <script>
-    const organizerSearchBar = document.getElementById('hotel-search-bar');
     const organizerCardContainer = document.getElementById('organizer-cards');
+    let organizerSearchBar = document.getElementById('hotel-search-bar');
     let organizerSearchResults;
+    let defaultOrganizerSearchResults;
     organizerSearchResults = [];
     function organizerSearchURL(query){
-        console.log(JSON.stringify(organizerSearchResults));
-        console.log(query)
         const url = `http://127.0.0.1:8000/hotel/query/${query}/search/`
         return url
     }
     async function organizerDataScrapper(url){
         const uncleanedData = await fetch(url);
         const cleanedData = await uncleanedData.json();
-        organizerSearchResults = await cleanedData.payload;
-        return cleanedData;
+        organizerSearchResults = await cleanedData.payload.searched_organizers;
+        defaultOrganizerSearchResults = cleanedData.payload.available_organizers
+        if(organizerSearchResults.length > 0 ) {
+            return cleanedData;
+        } else {
+            if (organizerSearchBar.value.length > 0) {
+                organizerCardContainer.innerHTML = `
+                    <div class="d-flex justify-content-center mt-4 pt-4">
+                        <p class="h2 pt-4">
+                            No results found for "${organizerSearchBar.value}"
+                        </p>
+                    </ div>
+                    `;
+                } else {
+                const uncleanedData = await fetch(url);
+                const cleanedData = await uncleanedData.json();
+                organizerSearchResults = defaultOrganizerArray
+            }
+        }
     }
     function organizerCardDisplayer(
         name,
@@ -44,30 +60,31 @@ Shop
         organizer_index
     ) {
         organizerCardContainer.innerHTML += `
-        <form method="post" class="col-md-6 col-12 col-sm-12 col-lg-4">
-            {% csrf_token %}
-            <input type="hidden" name="amount" value="350">
-            <figure class="card animate__animated animate__zoomIn">
-                <img nopin="nopin" oncontextmenu="return false;" class="img-fluid" style="max-height:13rem; min-height: 3rem;" src="https://www.roadaffair.com/wp-content/uploads/2021/03/mortlock-wing-library-south-australia-adelaide-shutterstock_1462390214.jpg">
-                <div class="card-header h4 text-center" style="font-family: chilanka;">
-                    ${name}
-                </div>
-                <div class="card-body border-bottom pb-2">
-                    <div class="pb-0">
-                        <p class="text-muted small">
-                            posted on ${date_created}
+            <form method="post" class="col-md-6 col-12 col-sm-12 col-lg-4">
+                {% csrf_token %}
+                <input type="hidden" name="amount" value="350">
+                <figure class="card animate__animated animate__zoomI">
+                    <img nopin="nopin" oncontextmenu="return false;" class="img-fluid" style="max-height:13rem; min-height: 3rem;" src="https://www.roadaffair.com/wp-content/uploads/2021/03/mortlock-wing-library-south-australia-adelaide-shutterstock_1462390214.jpg">
+                    <div class="card-header h4 text-center" style="font-family: chilanka;">
+                        ${name}
+                    </div>
+                    <div class="card-body border-bottom pb-2">
+                        <div class="pb-0">
+                            <p class="text-muted small">
+                                posted on ${date_created}
+                            </p>
+                        </div>
+                        <p class="h5 text-muted pt-0" style="font-family: chilanka;">
+                            ${description}
                         </p>
                     </div>
-                    <p class="h5 text-muted pt-0" style="font-family: chilanka;">
-                        ${description}
-                    </p>
-                </div>
-                <button type="submit" id="${organizer_index}" class="btn btn-primary text-white ">Buy Membership</button>
-            </figure>
-        </form>
+                    <button type="submit" id="${organizer_index}" class="btn btn-primary text-white ">Buy Membership</button>
+                </figure>
+            </form>
         `
     }
-    organizerSearchBar.addEventListener('keypress', (event) => {
+    organizerSearchBar.addEventListener('keydown', (event) => {
+        const organizerSearchBar = document.getElementById('hotel-search-bar');
         try {
             setTimeout(() => {
                 organizerDataScrapper(
@@ -75,10 +92,36 @@ Shop
                         organizerSearchBar.value,
                     )
                 )
-            }, 300)
+            }, 30)
         } catch (error) {
-            organizerSearchResults = []
-            console.log(error)
+            // do something with this error if neccessary otherwise do nothing
+        }
+        organizerCardContainer.innerHTML = '';
+        for (let index = 0; index < organizerSearchResults.length; index++) {
+            organizerCardDisplayer(
+                name=organizerSearchResults[index].name,
+                description=organizerSearchResults[index].description,
+                date_created=organizerSearchResults[index].created_at.date,
+                organizer_index=organizerSearchResults[index].pk,
+            )
+        }
+    })
+
+    organizerSearchBar.addEventListener('keydown', (event) => {
+        const organizerSearchBar = document.getElementById('hotel-search-bar');
+        try {
+            setTimeout(() => {
+                organizerDataScrapper(
+                    organizerSearchURL(
+                        organizerSearchBar.value,
+                    )
+                )
+                if (organizerSearchResults.length <= 0) {
+                    organizerSearchBar.click()
+                }
+            }, 30)
+        } catch (error) {
+            // do something with this error if neccessary otherwise do nothing
         }
         organizerCardContainer.innerHTML = '';
         for (let index = 0; index < organizerSearchResults.length; index++) {
@@ -90,28 +133,9 @@ Shop
             )        
         }
     })
-    organizerSearchBar.addEventListener('keydown', (event) => {
-        try {
-            setTimeout(() => {
-                organizerDataScrapper(
-                    organizerSearchURL(
-                        organizerSearchBar.value,
-                    )
-                )
-            }, 300)
-        } catch (error) {
-            organizerSearchResults = []
-            console.log(error)
-        }
-        organizerCardContainer.innerHTML = '';
-        for (let index = 0; index < organizerSearchResults.length; index++) {
-            organizerCardDisplayer(
-                name=organizerSearchResults[index].name,
-                description=organizerSearchResults[index].description,
-                date_created=organizerSearchResults[index].created_at.date,
-                organizer_index=organizerSearchResults[index].pk,
-            )        
-        }
+    organizerSearchBar.addEventListener('input', (event) => {
+       organizerCardContainer.innerHTML = '';
+       console.log(event)    
     })
 </script>
 {% endblock %}

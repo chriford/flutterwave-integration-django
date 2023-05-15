@@ -90,12 +90,17 @@ class HotelSerializer(ModelSerializer):
 def hotel_search(request, query):
     if not query:
         return redirect('/')
-    hotel_queryset = Hotel.objects.filter(
+    searched_organizer_results = Hotel.objects.filter(
         name__icontains = query
     )
-    hotel_data_seriazer = HotelSerializer(hotel_queryset, many=True)
+    available_organizers = Hotel.objects.all()
+    serialized_searched_organizers = HotelSerializer(searched_organizer_results, many=True)
+    serialized_available_organizers = HotelSerializer(available_organizers, many=True)
     return JsonResponse({
         'status': True,
-        'payload': hotel_data_seriazer.data,
+        'payload': {
+            'available_organizers': serialized_available_organizers.data,
+            'searched_organizers': serialized_searched_organizers.data,
+        }
     })
     
